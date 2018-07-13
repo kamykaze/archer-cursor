@@ -1,0 +1,11 @@
+- implement 'line mode' with:
+  -ordered sublist of links that cross the line
+  -highlight all applicable links
+  -'shift' key to cycle through links
+- improve line mode with subscection (only links after cursor)
+- implement 'cone mode'
+- implement 'archer mode' with:
+  -reverse direction
+  -auto click on release
+  -escape key to cancel
+
