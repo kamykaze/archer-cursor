@@ -21,16 +21,22 @@ var pointPointAngle = function(x1, y1, x2, y2) {
 	return Math.atan2(dy,dx) * 180 / Math.PI;
 };
 
+var getAngleDistPoint = function(x, y, angle, distance) {
+    var result = {};
+    result.x = Math.round(Math.cos(angle * Math.PI / 180) * distance + x);
+    result.y = Math.round(Math.sin(angle * Math.PI / 180) * distance + y);
+    return result;
+}
+
 // Setup
-var d_ctr = document.createElement('div');
-var d_cursor = document.createElement('div');
-var d_line = document.createElement('div');
-d_ctr.id='archercursor_d_center';
-d_cursor.id='archercursor_d_cursor';
-d_line.id='archercursor_d_line';
-document.body.appendChild(d_ctr);
-document.body.appendChild(d_cursor);
-document.body.appendChild(d_line);
+var drawing_elements = ['overlay','center','cursor','line','target'];
+var els = {}
+for (var el in drawing_elements) {
+    var name = drawing_elements[el]
+    els[name]=document.createElement('div');
+    els[name].id='archercursor_d_'+name;
+    document.body.appendChild(els[name]);
+}
 
 var active = false;
 var cursorX=0;
@@ -63,25 +69,27 @@ var prevClosest = links[0];
 
 var redraw = function() {
     if (active) {
-        d_ctr.style.display = 'block';
-        d_cursor.style.display = 'block';
-        d_line.style.display = 'block';
+        els['overlay'].style.display = 'block';
+        els['center'].style.display = 'block';
+        els['cursor'].style.display = 'block';
+        els['line'].style.display = 'block';
     }
     if (!active) {
-        d_ctr.style.display = 'none';
-        d_cursor.style.display = 'none';
-        d_line.style.display = 'none';
+        els['overlay'].style.display = 'none';
+        els['center'].style.display = 'none';
+        els['cursor'].style.display = 'none';
+        els['line'].style.display = 'none';
     }
 
-    d_ctr.style.left = ctrX;
-    d_ctr.style.top = ctrY;
-    d_cursor.style.left = cursorX;
-    d_cursor.style.top = cursorY;
+    els['center'].style.left = ctrX;
+    els['center'].style.top = ctrY;
+    els['cursor'].style.left = cursorX;
+    els['cursor'].style.top = cursorY;
 
-    d_line.style.width=pointPointDist(ctrX,ctrY,cursorX,cursorY)*pointPointDist(ctrX,ctrY,cursorX,cursorY)/2;
-    d_line.style.left = ctrX;
-    d_line.style.top = ctrY;
-    d_line.style.transform = "rotate("+angle+"deg)";
+    els['line'].style.width=pointPointDist(ctrX,ctrY,cursorX,cursorY)*5;
+    els['line'].style.left = ctrX;
+    els['line'].style.top = ctrY;
+    els['line'].style.transform = "rotate("+(angle-180)+"deg) translate(0,-50%)";
 }
 
 var handleKey = function(code, state) {
