@@ -72,5 +72,7 @@
   cursor: none;
   width: 10px;
   height: 10px;
-  background: rgba(128,128,128,0.2);
+  color: #222;
+  background: rgba(200,200,200,0.5);
+  text-align: center;
 }

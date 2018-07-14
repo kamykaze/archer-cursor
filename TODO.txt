@@ -1,3 +1,5 @@
+- make it into a proper chrome extension
+-fix scrolling positioning issues
 - implement 'line mode' with:
   -ordered sublist of links that cross the line
   -highlight all applicable links

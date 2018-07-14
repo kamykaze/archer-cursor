@@ -72,7 +72,7 @@ var lineLinkIntersect = function(x1,y1,x2,y2,link) {
 }
 
 // Configuration Options
-var distance_scale=5;
+var distance_scale=7;
 
 // Setup
 var drawing_elements = ['overlay','center','cursor','line','target','linkbox','eligiblelinks'];
@@ -171,6 +171,7 @@ var redrawEligibleLinks = function() {
             drawb.style.left=curlink.left+'px';
             drawb.style.width=curlink.right-curlink.left+'px';
             drawb.style.height=curlink.bottom-curlink.top+'px';
+            drawb.style.lineHeight=curlink.bottom-curlink.top+'px';
             elinks.appendChild(drawb);
         }
     }
