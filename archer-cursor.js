@@ -95,23 +95,23 @@ var redraw = function() {
     }
     if (!active) return;
 
-    els['center'].style.left = ctrX;
-    els['center'].style.top = ctrY;
-    els['cursor'].style.left = cursorX;
-    els['cursor'].style.top = cursorY;
-    els['target'].style.left = targetX;
-    els['target'].style.top = targetY;
+    els['center'].style.left = ctrX+'px';
+    els['center'].style.top = ctrY+'px';
+    els['cursor'].style.left = cursorX+'px';
+    els['cursor'].style.top = cursorY+'px';
+    els['target'].style.left = targetX+'px';
+    els['target'].style.top = targetY+'px';
 
-    els['line'].style.width=getScaledDist(distance,distance_scale);
-    els['line'].style.left = ctrX;
-    els['line'].style.top = ctrY;
+    els['line'].style.width=getScaledDist(distance,distance_scale)+'px';
+    els['line'].style.left = ctrX+'px';
+    els['line'].style.top = ctrY+'px';
     els['line'].style.transform = "rotate("+(angle-180)+"deg) translate(0,-50%)";
 
     if (targetLink) {
-        els['linkbox'].style.top=targetLink.top;
-        els['linkbox'].style.left=targetLink.left;
-        els['linkbox'].style.width=targetLink.right-targetLink.left;
-        els['linkbox'].style.height=targetLink.bottom-targetLink.top;
+        els['linkbox'].style.top=targetLink.top+'px';
+        els['linkbox'].style.left=targetLink.left+'px';
+        els['linkbox'].style.width=targetLink.right-targetLink.left+'px';
+        els['linkbox'].style.height=targetLink.bottom-targetLink.top+'px';
         els['linkbox'].style.display='block';
     }
     else {

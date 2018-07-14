@@ -12,6 +12,9 @@
     .cell {
       border: 1px solid #ccc;
     }
+    .grid-x a:hover {
+      color: red;
+    }
     </style>
   </head>
   <body>
@@ -24,7 +27,7 @@
               <li><a href="#2">Link 2</a></li>
               <li><a href="#3">Link 3</a></li>
               <li><a href="#4">Link 4</a></li>
-              <li><a href="#5">Link 5</a></li>
+              <li><a id="link5" href="#5">Link 5</a></li>
           </ul>
         </div>
         <div class="cell medium-6">
@@ -87,7 +90,12 @@
         </div>
       </div>
     </div>
+    <p>Bookmark the following link to use it as a javascript bookmarklet on any page: 
+      <a id="bookmarklet" href="#">Archer Cursor</a>
+    </p>
+
     <script src="archer-cursor.js"></script>
+    <script src="bookmarklet.js"></script>
   </body>
 </html>
 
