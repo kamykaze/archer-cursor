@@ -1,6 +1,8 @@
 # archer-cursor
 An alternative link targeting navigation system that combines mouse and keyboard use for minimal cursor travel.
 
+![img](https://github.com/kamykaze/archer-cursor/blob/master/sample_screenshot.png)
+
 Instructions
 ------------
 Currently this is very experimental. The index.html page can be loaded locally so you can test with. Once loaded, hold down the 'Command' key on a Mac to trigger the mode. Then move your cursor while holding the key in order to reach the links desired.
