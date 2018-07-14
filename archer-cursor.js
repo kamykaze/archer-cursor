@@ -9,18 +9,22 @@ var getElemOffset = function(elem) {
   return { top: top, left: left };
 };
 
+// get the distance between two points
 var pointPointDist = function(x1, y1, x2, y2) {
     var x = x1 - x2;
     var y = y1 - y2;
     return Math.sqrt(x*x + y*y);
 };
 
+// calculate the andle (in degrees) between two points
 var pointPointAngle = function(x1, y1, x2, y2) {
 	var dx = x1 - x2,
 		dy = y1 - y2;
 	return Math.atan2(dy,dx) * 180 / Math.PI;
 };
 
+// get a new point coordinates based on angle and distance of original
+// source: https://stackoverflow.com/questions/17456783/javascript-figure-out-point-y-by-angle-and-distance
 var getAngleDistPoint = function(x, y, angle, distance) {
     var result = {};
     result.x = Math.round(Math.cos((angle-180) * Math.PI / 180) * distance + x);
@@ -28,21 +32,50 @@ var getAngleDistPoint = function(x, y, angle, distance) {
     return result;
 }
 
+// gives a modified distance based on a formula (linear or exponential
 var getScaledDist = function(dist, scale) {
     //return dist*scale;
     return (dist*dist)/100*scale;
 }
 
+// returns true if a point is inside a link (box)
 var isInsideLink = function(x,y,link) {
     //console.log('link check:',x,y,link);
     return (link.left < x && x < link.right) && (link.top < y && y < link.bottom);
+}
+
+// returns true if the line from (a,b)->(c,d) intersects with (p,q)->(r,s)
+// source: https://stackoverflow.com/questions/9043805/test-if-two-lines-intersect-javascript-function
+var lineLineIntersect = function(a,b,c,d,p,q,r,s) {
+	var det, gamma, lambda;
+	det = (c - a) * (s - q) - (r - p) * (d - b);
+	if (det === 0) {
+		return false;
+	} else {
+		lambda = ((s - q) * (r - a) + (p - r) * (s - b)) / det;
+		gamma = ((b - d) * (r - a) + (c - a) * (s - b)) / det;
+		return (0 < lambda && lambda < 1) && (0 < gamma && gamma < 1);
+	}
+};
+
+// returns true if line intersects a link (box)
+var lineLinkIntersect = function(x1,y1,x2,y2,link) {
+
+    // box top side
+    if (lineLineIntersect(x1,y1,x2,y2,link.left,link.top,link.right,link.top)) return true;
+    // box bottom side
+    if (lineLineIntersect(x1,y1,x2,y2,link.left,link.bottom,link.right,link.bottom)) return true;
+    // box left side
+    if (lineLineIntersect(x1,y1,x2,y2,link.left,link.top,link.left,link.bottom)) return true;
+    // box right side
+    if (lineLineIntersect(x1,y1,x2,y2,link.right,link.top,link.right,link.bottom)) return true;
 }
 
 // Configuration Options
 var distance_scale=5;
 
 // Setup
-var drawing_elements = ['overlay','center','cursor','line','target','linkbox'];
+var drawing_elements = ['overlay','center','cursor','line','target','linkbox','eligiblelinks'];
 var els = {}
 for (var el in drawing_elements) {
     var name = drawing_elements[el]
@@ -76,12 +109,12 @@ for (var i = 0; i < as.length; i++)
         top: offset.top,
         right: offset.left+a.offsetWidth,
         bottom: offset.top+a.offsetHeight
-    };
-    links.push(link);
+    }; links.push(link);
 }
 //console.log('links:',links);
 
 var targetLink = null;
+var eligibleLinks = []; // list of links that meet criteria
 
 var redraw = function() {
 
@@ -117,6 +150,33 @@ var redraw = function() {
     else {
         els['linkbox'].style.display='none';
     }
+    redrawEligibleLinks();
+}
+
+var redrawEligibleLinks = function() {
+    // quickly cleanup existing link boxes
+    var elinks = els['eligiblelinks'];
+    while(elinks.firstChild) { elinks.removeChild(elinks.firstChild); }
+
+    // we use the eligiblelinks div as an overlay to insert boxes representing each link
+    if (eligibleLinks.length) {
+        elinks.style.display='block';
+        var i=0;
+        for (l in eligibleLinks) {
+            var curlink=eligibleLinks[l];
+            var drawb = curlink.drawbox=document.createElement('div');
+            drawb.className='target_box';
+            drawb.innerHTML=i++;
+            drawb.style.top=curlink.top+'px';
+            drawb.style.left=curlink.left+'px';
+            drawb.style.width=curlink.right-curlink.left+'px';
+            drawb.style.height=curlink.bottom-curlink.top+'px';
+            elinks.appendChild(drawb);
+        }
+    }
+    else {
+        elinks.style.display='none';
+    }
 }
 
 var handleKey = function(code, state) {
@@ -124,7 +184,7 @@ var handleKey = function(code, state) {
     // Cmd
     if (code == 91 ) {
         if (state == 'down') {
-            active = true; 
+            active = true;
             ctrX = cursorX;
             ctrY = cursorY;
             angle = 0;
@@ -161,6 +221,7 @@ var handleMouseMove = function(x, y) {
 
     // check for activated links
     targetLink = null;
+    eligibleLinks = [];
     for (var i=0; i < links.length; i++) {
         var l = links[i];
         var hit = isInsideLink(targetX,targetY,l);
@@ -168,7 +229,12 @@ var handleMouseMove = function(x, y) {
             targetLink = l;
             console.log('link found:',l);
         }
+        var intersects = lineLinkIntersect(ctrX,ctrY,targetX,targetY,l);
+        if (intersects) {
+            eligibleLinks.push(l);
+        }
     }
+    console.log('eligibleLinks:',eligibleLinks);
 
     redraw();
 }

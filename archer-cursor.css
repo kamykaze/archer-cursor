@@ -1,4 +1,5 @@
-#archercursor_d_overlay {
+#archercursor_d_overlay,
+#archercursor_d_eligiblelinks {
   opacity: 0;
   z-index: 9999;
   cursor: none;
@@ -7,7 +8,7 @@
   right: 0;
   bottom: 0;
   left: 0;
-  background: rgba(200,200,255,0.3);
+  /*background: rgba(200,200,255,0.3);*/
   display: none;
 }
 #archercursor_d_center,
@@ -57,5 +58,19 @@
 }
 #archercursor_d_linkbox {
   border: 2px solid blue;
+  background: rgba(0,0,255,0.2);
 }
-
+#archercursor_d_eligiblelinks {
+  opacity: 1;
+  /*background: rgba(255,33,0,0.2);*/
+}
+#archercursor_d_eligiblelinks .target_box {
+  border: 1px solid #999;
+  display: block;
+  position: absolute;
+  z-index: 9999;
+  cursor: none;
+  width: 10px;
+  height: 10px;
+  background: rgba(128,128,128,0.2);
+}
