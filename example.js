@@ -8,6 +8,37 @@
     }
 
     var hasCollision = function(t,l,w,h) {
+        // TODO: this doesn't work perfectly
+        // If a skinny box crosses through another, but no points end up in the 2nd box, this returns false
+
+        // define 4 points of the box. 
+        // If any of them is inside another box, then we have collision
+        var x1=l,   y1=t,   // TL
+            x2=l+w, y2=t,   // TR
+            x3=l+w, y3=t+h, // BR
+            x4=l,   y4=t+h; // BL
+
+        if (cont.childNodes.length) {
+            for (c in cont.childNodes) {
+                var child = cont.childNodes[c];
+                var c_x1=child.offsetLeft,                   c_y1=child.offsetTop,                    // TL
+                    c_x2=child.offsetLeft+child.offsetWidth, c_y2=child.offsetTop,                    // TR
+                    c_x3=child.offsetLeft+child.offsetWidth, c_y3=child.offsetTop+child.offsetHeight, // BR
+                    c_x4=child.offsetLeft,                   c_y4=child.offsetTop+child.offsetHeight; // BL
+
+                // we check the four points of the new box against existing child
+                if ((c_x1 < x1 && x1 < c_x3) && (c_y1 < y1 && y1 < c_y3)) return true;
+                if ((c_x1 < x2 && x2 < c_x3) && (c_y1 < y2 && y2 < c_y3)) return true;
+                if ((c_x1 < x3 && x3 < c_x3) && (c_y1 < y3 && y3 < c_y3)) return true;
+                if ((c_x1 < x4 && x4 < c_x3) && (c_y1 < y4 && y4 < c_y3)) return true;
+
+                // then the four points of the child against the new box
+                if ((x1 < c_x1 && c_x1 < x3) && (y1 < c_y1 && c_y1 < y3)) return true;
+                if ((x1 < c_x2 && c_x2 < x3) && (y1 < c_y2 && c_y2 < y3)) return true;
+                if ((x1 < c_x3 && c_x3 < x3) && (y1 < c_y3 && c_y3 < y3)) return true;
+                if ((x1 < c_x4 && c_x4 < x3) && (y1 < c_y4 && c_y4 < y3)) return true;
+            }
+        }
         return false;
     }
 

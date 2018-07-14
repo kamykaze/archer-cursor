@@ -2,7 +2,7 @@
 #archercursor_d_eligiblelinks {
   opacity: 0;
   z-index: 9999;
-  cursor: none;
+  /*cursor: none;*/
   position: fixed;
   top: 0;
   right: 0;
@@ -39,19 +39,17 @@
   width: 10px;
   height: 10px;
   background-color: rgba(128,128,128,0.7);
-  cursor: none;
+  /*cursor: none;*/
 }
 #archercursor_d_target {
   width: 15px;
   height: 15px;
   background-color: rgba(255,0,0,0.8);
-  cursor: none;
 }
 #archercursor_d_line {
   height: 6px;
   background-color: rgba(128,128,128,0.2);
   transform-origin: left 0%;
-  cursor: none;
   border-radius: 0 50% 50% 0;
   -moz-border-radius: 0 50% 50% 0;
   -webkit-border-radius: 0 50% 50% 0;
@@ -69,7 +67,6 @@
   display: block;
   position: absolute;
   z-index: 9999;
-  cursor: none;
   width: 10px;
   height: 10px;
   color: #222;
