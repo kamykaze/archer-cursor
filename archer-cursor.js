@@ -16,6 +16,26 @@ var pointPointDist = function(x1, y1, x2, y2) {
     return Math.sqrt(x*x + y*y);
 };
 
+// get the distance between a point and a box
+var pointBoxDist = function(x, y, box) {
+  var dx = 0;
+  var dy = 0;
+
+  //Compute distance to elem in X
+  if (x < box.left)
+     dx = box.left - x;
+  else if (x > box.right)
+      dx = box.right - x;
+
+  //Compute distance to elem in Y
+  if (y < box.top)
+     dy = box.top - y;
+  else if (y > box.bottom)
+     dy = box.bottom - y;
+
+  return Math.floor(Math.sqrt(dx * dx + dy * dy));
+}
+
 // calculate the andle (in degrees) between two points
 var pointPointAngle = function(x1, y1, x2, y2) {
 	var dx = x1 - x2,
@@ -75,6 +95,7 @@ var lineLinkIntersect = function(x1,y1,x2,y2,link) {
     if (lineLineIntersect(x1,y1, x2,y2, l_x1,l_y1, l_x4,l_y4)) return true;
     // box right side
     if (lineLineIntersect(x1,y1, x2,y2, l_x2,l_y2, l_x3,l_y3)) return true;
+    return false;
 }
 
 // Configuration Options
@@ -176,7 +197,7 @@ var redrawEligibleLinks = function() {
         elinks.style.display='block';
         var i=0;
         for (l in eligibleLinks) {
-            var curlink=eligibleLinks[l];
+            var curlink=eligibleLinks[l].link;
             var drawb = curlink.drawbox=document.createElement('div');
             drawb.className='target_box';
             drawb.innerHTML=i++;
@@ -228,6 +249,8 @@ var handleMouseMove = function(x, y) {
     angle = pointPointAngle(ctrX,ctrY,cursorX,cursorY);
     distance = pointPointDist(ctrX,ctrY,cursorX,cursorY);
 
+    if (distance < 5) { return false; } // minimum distance
+
     targetCoords = getAngleDistPoint(ctrX,ctrY,angle,getScaledDist(distance,distance_scale));
     targetX = targetCoords.x;
     targetY = targetCoords.y;
@@ -246,7 +269,28 @@ var handleMouseMove = function(x, y) {
         }
         var intersects = lineLinkIntersect(cursorX,cursorY,targetX,targetY,l);
         if (intersects) {
-            eligibleLinks.push(l);
+            //eligibleLinks.push(l);
+
+            // get ctr to link distance
+            var dist = pointBoxDist(ctrX, ctrY, l);
+            console.log('link dist:', dist);
+            var elink = {
+                distance: dist,
+                link: l
+            }
+            //  then insert the link in proper sorted order
+            var inserted = false;
+            for (var j = 0, len = eligibleLinks.length; j < len; j++) {
+                if (dist < eligibleLinks[j].distance) {
+                    eligibleLinks.splice(j, 0, elink);
+                    inserted=true;
+                    break;
+                }
+            }
+            if (!inserted) {
+                eligibleLinks.push(elink);
+            }
+
         }
     }
     console.log('eligibleLinks:',eligibleLinks);

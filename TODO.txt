@@ -1,9 +1,10 @@
 - make it into a proper chrome extension
 * fix scrolling positioning issues
 * fix positioning issues due to window resize
+- trigger key to activate selected link
 - implement 'line mode' with:
-  -ordered sublist of links that cross the line
-  -highlight all applicable links
+  * ordered sublist of links that cross the line
+  * highlight all applicable links
   -'shift' key to cycle through links
 - improve line mode with subscection (only links after cursor)
 - implement 'cone mode'
