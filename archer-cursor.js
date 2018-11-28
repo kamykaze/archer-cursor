@@ -120,6 +120,7 @@ var targetX=0;
 var targetY=0;
 var angle=0; // angle between center and cursor
 var distance=0; // distance between center and cursor
+var selectedIndex=0;
 
 // [{top:0, left:0, right:0, bottom:0, a:<anchor>}, ...]
 var links = [];
@@ -214,25 +215,65 @@ var redrawEligibleLinks = function() {
     }
 }
 
+var getTargetLink = function() {
+
+    targetLink = null;
+    if (selectedIndex >= eligibleLinks.length) {
+        selectedIndex = 0;
+    }
+    if (selectedIndex < 0) {
+        selectedIndex = eligibleLinks.length - 1;
+    }
+    if (eligibleLinks.length) {
+        targetLink = eligibleLinks[selectedIndex].link;
+    }
+}
+
+var deactivate = function() {
+
+    active = false;
+    ctrX = cursorX;
+    ctrY = cursorY;
+    angle = 0;
+    distance = 0;
+    redraw();
+}
+
 var handleKey = function(code, state) {
 
     // Cmd
     if (code == 91 ) {
         if (state == 'down') {
             active = true;
-            ctrX = cursorX;
-            ctrY = cursorY;
+            activeDist = false;
+            //ctrX = cursorX;
+            //ctrY = cursorY;
             angle = 0;
             distance = 0;
             eligibleLinks = [];
+            selectedIndex = 0;
         }
         else {
-            active = false;
-            ctrX = cursorX;
-            ctrY = cursorY;
-            angle = 0;
-            distance = 0;
+            if (!active) { return; }
+            if (targetLink) {
+                targetLink.a.click();
+            }
+            deactivate();
         }
+    }
+
+    if (code == 16) {
+        deactivate();
+    }
+    
+    if (code == 74 && state == 'down') {
+        selectedIndex++;
+        getTargetLink();
+        redraw();
+    }
+    if (code == 75 && state == 'down') {
+        selectedIndex--;
+        getTargetLink();
         redraw();
     }
 }
@@ -249,7 +290,14 @@ var handleMouseMove = function(x, y) {
     angle = pointPointAngle(ctrX,ctrY,cursorX,cursorY);
     distance = pointPointDist(ctrX,ctrY,cursorX,cursorY);
 
-    if (distance < 5) { return false; } // minimum distance
+    if (!activeDist && distance > 1) {
+        activeDist = true;
+        ctrX = cursorX;
+        ctrY = cursorY;
+    }
+    if (distance < 5) {
+        return false; 
+    } // minimum distance
 
     targetCoords = getAngleDistPoint(ctrX,ctrY,angle,getScaledDist(distance,distance_scale));
     targetX = targetCoords.x;
@@ -258,18 +306,11 @@ var handleMouseMove = function(x, y) {
     console.log('mouse position:',x,y,'target:',targetX, targetY);
 
     // check for activated links
-    targetLink = null;
     eligibleLinks = [];
     for (var i=0; i < links.length; i++) {
         var l = links[i];
-        var hit = isInsideLink(targetX,targetY,l);
-        if (hit) {
-            targetLink = l;
-            console.log('link found:',l);
-        }
         var intersects = lineLinkIntersect(cursorX,cursorY,targetX,targetY,l);
         if (intersects) {
-            //eligibleLinks.push(l);
 
             // get ctr to link distance
             var dist = pointBoxDist(ctrX, ctrY, l);
@@ -293,6 +334,7 @@ var handleMouseMove = function(x, y) {
 
         }
     }
+    getTargetLink();
     console.log('eligibleLinks:',eligibleLinks);
 
     redraw();
