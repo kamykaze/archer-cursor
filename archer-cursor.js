@@ -127,6 +127,8 @@ for (var el in drawing_elements) {
 }
 
 var active = false;
+var activeDist = false;
+var sleep = false;
 var cursorX=0;
 var cursorY=0;
 var ctrX=0;
@@ -169,7 +171,7 @@ var eligibleLinks = []; // list of links that meet criteria
 var redraw = function() {
 
     for (var el in els) {
-        if (active) {
+        if (active && !sleep) {
             els[el].style.display='block';
         }
         else {
@@ -180,27 +182,33 @@ var redraw = function() {
 
     els['center'].style.left = ctrX+'px';
     els['center'].style.top = ctrY+'px';
+    els['center'].style.display = 'block';
     els['cursor'].style.left = cursorX+'px';
     els['cursor'].style.top = cursorY+'px';
+    els['cursor'].style.display = 'block';
     els['target'].style.left = targetX+'px';
     els['target'].style.top = targetY+'px';
+    els['target'].style.display = 'block';
 
-    els['line'].style.width=getScaledDist(distance,distance_scale)+'px';
-    els['line'].style.left = ctrX+'px';
-    els['line'].style.top = ctrY+'px';
-    els['line'].style.transform = "rotate("+(angle-180)+"deg) translate(0,-50%)";
+    if (!sleep) {
 
-    if (targetLink) {
-        els['linkbox'].style.top=targetLink.top+'px';
-        els['linkbox'].style.left=targetLink.left+'px';
-        els['linkbox'].style.width=targetLink.right-targetLink.left+'px';
-        els['linkbox'].style.height=targetLink.bottom-targetLink.top+'px';
-        els['linkbox'].style.display='block';
+        els['line'].style.width=getScaledDist(distance,distance_scale)+'px';
+        els['line'].style.left = ctrX+'px';
+        els['line'].style.top = ctrY+'px';
+        els['line'].style.transform = "rotate("+(angle-180)+"deg) translate(0,-50%)";
+
+        if (targetLink) {
+            els['linkbox'].style.top=targetLink.top+'px';
+            els['linkbox'].style.left=targetLink.left+'px';
+            els['linkbox'].style.width=targetLink.right-targetLink.left+'px';
+            els['linkbox'].style.height=targetLink.bottom-targetLink.top+'px';
+            els['linkbox'].style.display='block';
+        }
+        else {
+            els['linkbox'].style.display='none';
+        }
+        redrawEligibleLinks();
     }
-    else {
-        els['linkbox'].style.display='none';
-    }
-    redrawEligibleLinks();
 }
 
 var redrawEligibleLinks = function() {
@@ -248,7 +256,7 @@ var getDistTargetLink = function() {
     targetLink = null;
     var numElinks = eligibleLinks.length
 
-    var distSteps = Math.floor(distance/10); // for every few pixels, we jump to a new link
+    var distSteps = Math.floor(distance/20); // for every few pixels, we jump to a new link
 
     if (numElinks) {
         selectedIndex = distSteps%numElinks;
@@ -284,8 +292,6 @@ var handleKey = function(keycode, state, code) {
 
                 active = true;
                 activeDist = false;
-                //ctrX = cursorX;
-                //ctrY = cursorY;
                 angle = 0;
                 distance = 0;
                 eligibleLinks = [];
@@ -294,7 +300,9 @@ var handleKey = function(keycode, state, code) {
             else {
                 if (!active) { return; }
                 deactivate();
-                triggerLink();
+                if (!sleep) {
+                    triggerLink();
+                }
             }
             break;
 
@@ -345,9 +353,14 @@ var handleMouseMove = function(x, y) {
         ctrX = cursorX;
         ctrY = cursorY;
     }
-    if (distance < 5) {
+    if (distance < 50) {
+        sleep = true; // sleep avoids computing when the mouse is too near to be precise
+        redraw();
         return false;
-    } // minimum distance
+    }
+    else {
+        sleep = false;
+    }
 
     targetCoords = getAngleDistPoint(ctrX,ctrY,angle,getScaledDist(distance,distance_scale));
     targetX = targetCoords.x;
