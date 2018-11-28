@@ -255,17 +255,25 @@ var handleKey = function(code, state) {
         }
         else {
             if (!active) { return; }
-            if (targetLink) {
-                targetLink.a.click();
-            }
             deactivate();
         }
     }
 
-    if (code == 16) {
+    // Shift
+    if (code == 16 && state == 'up') {
+        selectedIndex++;
+        getTargetLink();
+        redraw();
+    }
+
+    // Enter
+    if (code == 13 && state == 'down') {
+        if (targetLink) {
+            targetLink.a.click();
+        }
         deactivate();
     }
-    
+
     if (code == 74 && state == 'down') {
         selectedIndex++;
         getTargetLink();
@@ -296,7 +304,7 @@ var handleMouseMove = function(x, y) {
         ctrY = cursorY;
     }
     if (distance < 5) {
-        return false; 
+        return false;
     } // minimum distance
 
     targetCoords = getAngleDistPoint(ctrX,ctrY,angle,getScaledDist(distance,distance_scale));
