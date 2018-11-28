@@ -35,7 +35,8 @@ var getAngleDistPoint = function(x, y, angle, distance) {
 // gives a modified distance based on a formula (linear or exponential
 var getScaledDist = function(dist, scale) {
     //return dist*scale;
-    return (dist*dist)/100*scale;
+    //return (dist*dist)/100*scale;
+    return (dist)?9999:0;
 }
 
 // returns true if a point is inside a link (box)
@@ -61,18 +62,23 @@ var lineLineIntersect = function(a,b,c,d,p,q,r,s) {
 // returns true if line intersects a link (box)
 var lineLinkIntersect = function(x1,y1,x2,y2,link) {
 
+    var l_x1 = link.left,  l_y1 = link.top,
+        l_x2 = link.right, l_y2 = link.top,
+        l_x3 = link.right, l_y3 = link.bottom,
+        l_x4 = link.left,  l_y4 = link.bottom;
+
     // box top side
-    if (lineLineIntersect(x1,y1,x2,y2,link.left,link.top,link.right,link.top)) return true;
+    if (lineLineIntersect(x1,y1, x2,y2, l_x1,l_y1, l_x2,l_y2)) return true;
     // box bottom side
-    if (lineLineIntersect(x1,y1,x2,y2,link.left,link.bottom,link.right,link.bottom)) return true;
+    if (lineLineIntersect(x1,y1, x2,y2, l_x4,l_y4, l_x3,l_y3)) return true;
     // box left side
-    if (lineLineIntersect(x1,y1,x2,y2,link.left,link.top,link.left,link.bottom)) return true;
+    if (lineLineIntersect(x1,y1, x2,y2, l_x1,l_y1, l_x4,l_y4)) return true;
     // box right side
-    if (lineLineIntersect(x1,y1,x2,y2,link.right,link.top,link.right,link.bottom)) return true;
+    if (lineLineIntersect(x1,y1, x2,y2, l_x2,l_y2, l_x3,l_y3)) return true;
 }
 
 // Configuration Options
-var distance_scale=7;
+var distance_scale=99;
 
 // Setup
 var drawing_elements = ['overlay','center','cursor','line','target','linkbox','eligiblelinks'];
@@ -97,21 +103,28 @@ var distance=0; // distance between center and cursor
 // [{top:0, left:0, right:0, bottom:0, a:<anchor>}, ...]
 var links = [];
 
-var as = document.getElementsByTagName('a');
-for (var i = 0; i < as.length; i++)
-{
-    var a = as[i];
-    var offset = getElemOffset(a);
+var getLinkPositions = function() {
 
-    var link = {
-        a: a,
-        left: offset.left,
-        top: offset.top,
-        right: offset.left+a.offsetWidth,
-        bottom: offset.top+a.offsetHeight
-    }; links.push(link);
+    var pageLinks = []
+    var as = document.getElementsByTagName('a');
+    for (var i = 0; i < as.length; i++)
+    {
+        var a = as[i];
+        var offset = getElemOffset(a);
+
+        var link = {
+            a: a,
+            left: offset.left,
+            top: offset.top,
+            right: offset.left+a.offsetWidth,
+            bottom: offset.top+a.offsetHeight
+        }; pageLinks.push(link);
+    }
+    console.log('pageLinks:',pageLinks);
+    return pageLinks
 }
-//console.log('links:',links);
+links = getLinkPositions();
+console.log('links:',links);
 
 var targetLink = null;
 var eligibleLinks = []; // list of links that meet criteria
@@ -190,6 +203,7 @@ var handleKey = function(code, state) {
             ctrY = cursorY;
             angle = 0;
             distance = 0;
+            eligibleLinks = [];
         }
         else {
             active = false;
@@ -230,7 +244,7 @@ var handleMouseMove = function(x, y) {
             targetLink = l;
             console.log('link found:',l);
         }
-        var intersects = lineLinkIntersect(ctrX,ctrY,targetX,targetY,l);
+        var intersects = lineLinkIntersect(cursorX,cursorY,targetX,targetY,l);
         if (intersects) {
             eligibleLinks.push(l);
         }
@@ -269,6 +283,10 @@ document.addEventListener('mousemove', function(e){
 document.addEventListener('mousedown', function(e){
     e.preventDefault();
     handleMouseClick(e);
+});
+
+window.addEventListener('resize', function(e){
+    links=getLinkPositions();
 });
 
 })();
