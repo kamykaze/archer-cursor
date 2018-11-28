@@ -1,0 +1,13 @@
+{
+    "manifest_version": 2,
+    "name": "Archer Cursor",
+    "version": "0.1.0",
+    "description": "An alternative link targeting navigation system that combines mouse and keyboard use for minimal cursor travel",
+    "content_scripts": [{
+        "css": ["archer-cursor.css"],
+        "js": ["archer-cursor.js"],
+        "matches": [
+            "*://*/*"
+        ]
+    }]
+}
