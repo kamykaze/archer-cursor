@@ -9,6 +9,21 @@ var getElemOffset = function(elem) {
   return { top: top, left: left };
 };
 
+// checks if an element is in viewport
+var boxInPartialView = function(box) {
+    var winH = (window.innerHeight || document.documentElement.clientHeight);
+    var winW = (window.innerWidth || document.documentElement.clientWidth);
+    var winTop = window.scrollY;
+    var winLeft = window.scrollX;
+
+    return (
+        box.bottom >= winTop &&
+        box.right >= winLeft &&
+        box.top <= (winTop + winH) &&
+        box.left <= (winLeft + winW)
+    );
+}
+
 // get the distance between two points
 var pointPointDist = function(x1, y1, x2, y2) {
     var x = x1 - x2;
@@ -318,7 +333,8 @@ var handleMouseMove = function(x, y) {
     for (var i=0; i < links.length; i++) {
         var l = links[i];
         var intersects = lineLinkIntersect(cursorX,cursorY,targetX,targetY,l);
-        if (intersects) {
+        var inView = boxInPartialView(l);
+        if (intersects && inView) {
 
             // get ctr to link distance
             var dist = pointBoxDist(ctrX, ctrY, l);
@@ -353,6 +369,7 @@ var handleMouseClick = function(e) {
     if (!active) { return; }
     //console.log('mousedown:', e);
     if (targetLink) {
+        e.preventDefault();
         targetLink.a.click();
     }
 }
@@ -375,7 +392,6 @@ document.addEventListener('mousemove', function(e){
     handleMouseMove(e.pageX, e.pageY);
 });
 document.addEventListener('mousedown', function(e){
-    e.preventDefault();
     handleMouseClick(e);
 });
 
