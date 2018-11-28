@@ -233,13 +233,25 @@ var redrawEligibleLinks = function() {
 var getTargetLink = function() {
 
     targetLink = null;
-    if (selectedIndex >= eligibleLinks.length) {
-        selectedIndex = 0;
+    var numElinks = eligibleLinks.length
+
+    // contain index within available array of eligiblelinks (primarily when using keys to cycle)
+    if (selectedIndex >= numElinks) { selectedIndex = 0; }
+    if (selectedIndex < 0) { selectedIndex = numElinks - 1; }
+
+    if (numElinks) {
+        targetLink = eligibleLinks[selectedIndex].link;
     }
-    if (selectedIndex < 0) {
-        selectedIndex = eligibleLinks.length - 1;
-    }
-    if (eligibleLinks.length) {
+}
+var getDistTargetLink = function() {
+
+    targetLink = null;
+    var numElinks = eligibleLinks.length
+
+    var distSteps = Math.floor(distance/10); // for every few pixels, we jump to a new link
+
+    if (numElinks) {
+        selectedIndex = distSteps%numElinks;
         targetLink = eligibleLinks[selectedIndex].link;
     }
 }
@@ -254,51 +266,66 @@ var deactivate = function() {
     redraw();
 }
 
-var handleKey = function(code, state) {
+var triggerLink = function() {
 
-    // Cmd
-    if (code == 91 ) {
-        if (state == 'down') {
-            active = true;
-            activeDist = false;
-            //ctrX = cursorX;
-            //ctrY = cursorY;
-            angle = 0;
-            distance = 0;
-            eligibleLinks = [];
-            selectedIndex = 0;
-        }
-        else {
-            if (!active) { return; }
+    if (targetLink) {
+        targetLink.a.click();
+    }
+}
+
+var handleKey = function(keycode, state, code) {
+
+    switch(keycode) {
+        case 91: // Cmd
+            if (state == 'down') {
+
+                // Pressing both CMD keys at the same time deactivates
+                if (active) { deactivate(); } 
+
+                active = true;
+                activeDist = false;
+                //ctrX = cursorX;
+                //ctrY = cursorY;
+                angle = 0;
+                distance = 0;
+                eligibleLinks = [];
+                selectedIndex = 0;
+            }
+            else {
+                if (!active) { return; }
+                deactivate();
+                triggerLink();
+            }
+            break;
+
+        case 16: // Shift
+            if (state == 'down') {
+                if (code == 'ShiftLeft') {
+                    selectedIndex--;
+                }
+                if (code == 'ShiftRight') {
+                    selectedIndex++;
+                }
+                getTargetLink();
+                redraw();
+            }
+            break;
+
+        case 13: // ENTER
+            if (state == 'down') {
+                deactivate();
+                triggerLink();
+            }
+            break;
+        case 27: // ESC
             deactivate();
-        }
+            break;
+
+        default:
+            // If not a recognized key, deactivate to prevent a sticky cursor
+            deactivate();
     }
 
-    // Shift
-    if (code == 16 && state == 'up') {
-        selectedIndex++;
-        getTargetLink();
-        redraw();
-    }
-
-    // Enter
-    if (code == 13 && state == 'down') {
-        if (targetLink) {
-            targetLink.a.click();
-        }
-        deactivate();
-    }
-
-    if (code == 74 && state == 'down') {
-        selectedIndex++;
-        getTargetLink();
-        redraw();
-    }
-    if (code == 75 && state == 'down') {
-        selectedIndex--;
-        getTargetLink();
-        redraw();
-    }
 }
 
 var handleMouseMove = function(x, y) {
@@ -358,7 +385,7 @@ var handleMouseMove = function(x, y) {
 
         }
     }
-    getTargetLink();
+    getDistTargetLink();
     console.log('eligibleLinks:',eligibleLinks);
 
     redraw();
@@ -370,7 +397,7 @@ var handleMouseClick = function(e) {
     //console.log('mousedown:', e);
     if (targetLink) {
         e.preventDefault();
-        targetLink.a.click();
+        triggerLink();
     }
 }
 
@@ -379,12 +406,12 @@ var handleMouseClick = function(e) {
 
 // Key handlers
 document.addEventListener('keydown', function(e){
-    var code = (e.keyCode ? e.keyCode : e.which);
-    handleKey(code, 'down');
+    var keycode = (e.keyCode ? e.keyCode : e.which);
+    handleKey(keycode, 'down', e.code);
 }, false);
 document.addEventListener('keyup', function(e){
-    var code = (e.keyCode ? e.keyCode : e.which);
-    handleKey(code, 'up');
+    var keycode = (e.keyCode ? e.keyCode : e.which);
+    handleKey(keycode, 'up', e.code);
 }, false);
 
 // Mouse handlers

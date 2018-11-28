@@ -58,11 +58,8 @@ TODO: add notes on vimium and bubble cursor
 
 Instructions
 ------------
-Currently this is very experimental. The examples/index.html page can be loaded locally so you can test with. Once loaded, hold down the 'Command' key on a Mac to trigger the mode. Then move your cursor while holding the key in the direction of the link desired. Hitting 'ENTER' or clicking the mouse will trigger the highlighted link. If the link you want is not the highlighted one, use 'SHIFT' or j/k keys to cycle through the links (this functionality will be improved in the future).
+Currently this is very experimental. The examples/index.html page can be loaded locally so you can test with. Once loaded, hold down the 'Command' key on a Mac to trigger the mode. Then move your cursor while holding the key in the direction of the link desired. Hitting 'ENTER' or clicking the mouse will trigger the highlighted link. If the link you want is not the highlighted one, keep moving your mouse to cycle through the links, or use left/right 'SHIFT' keys to cycle through the links with more precision.
 
-I also added a bookmarklet link. However, you'll need to host the file somewhere.
-
-The goal is to make this into a proper Chrome Extension, so the code has proper access over web sites in order to make it work (bookmarklets run into all kinds of security restrictions).
 
 License
 -------

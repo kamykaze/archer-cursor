@@ -1,12 +1,12 @@
-- make it into a proper chrome extension
+* make it into a proper chrome extension
 * fix scrolling positioning issues
 * fix positioning issues due to window resize
 * trigger selected link on key release
-- implement 'line mode' with:
+* implement 'line mode' with:
   * ordered sublist of links that cross the line
   * highlight all applicable links
-  * 'shift' key to cycle through links
-  - targetlink selected cycles based on distance
+  * 'shift' keys to cycle through links
+  * targetlink selected cycles based on distance
   - quickly select link witj 'jkl;' keys
 - improve line mode with subscection (only links after cursor)
 - implement 'cone mode'
