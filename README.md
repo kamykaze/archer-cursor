@@ -56,9 +56,23 @@ TODO: add notes on vimium and bubble cursor
 
 ![img](https://github.com/kamykaze/archer-cursor/blob/master/sample_screenshot.png)
 
-Instructions
+Installation
 ------------
-Currently this is very experimental. The examples/index.html page can be loaded locally so you can test with. Once loaded, hold down the 'Command' key on a Mac to trigger the mode. Then move your cursor while holding the key in the direction of the link desired. Hitting 'ENTER' or clicking the mouse will trigger the highlighted link. If the link you want is not the highlighted one, keep moving your mouse to cycle through the links, or use left/right 'SHIFT' keys to cycle through the links with more precision.
+Currently this is very experimental. The examples/index.html page can be loaded locally so you can test with. Alternatively, you can load the unpacked extension on your Chrome browser and use on any page.
+
+
+How to Use
+----------
+Hold down the 'Command' key on a Mac to trigger the mode.
+
+** Activate the mode **
+While holding the key, move your cursor in the direction of the link desired. There's a minimum distance that needs to be traveled before links will be active and highlighted. This is to avoid the jumpiness and inaccuracy during the first few pixels.
+
+** Cycling through links **
+If you keep moving the mouse further/closer, the active link will be cycled among the eligible links. You can also use the SHIFT keys to cycle links one by one for more accuracy. This should only be needed on heavily packed pages.
+
+** Activating the link **
+There are three ways to trigger the active link. The quickest is to simply release the CMD key while the link is active. You can also click your mouse or use the 'ENTER' key to trigger the link.
 
 
 License
