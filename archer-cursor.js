@@ -336,13 +336,17 @@ var handleKey = function(keycode, state, code) {
 
 }
 
-var handleMouseMove = function(x, y) {
+var handleMouseMove = function(x, y, e) {
 
     cursorX = x;
     cursorY = y;
 
     // don't do expensive calculations if not active
     if (!active) { return false; }
+    if (!e.metaKey) { // TODO: make this in sync with handlekey's keycode for CMD key
+        deactivate();
+        return false;
+    }
 
     var targetCoords = {};
     angle = pointPointAngle(ctrX,ctrY,cursorX,cursorY);
@@ -429,7 +433,7 @@ document.addEventListener('keyup', function(e){
 
 // Mouse handlers
 document.addEventListener('mousemove', function(e){
-    handleMouseMove(e.pageX, e.pageY);
+    handleMouseMove(e.pageX, e.pageY, e);
 });
 document.addEventListener('mousedown', function(e){
     handleMouseClick(e);
