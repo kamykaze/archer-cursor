@@ -8,7 +8,6 @@
   right: 0;
   bottom: 0;
   left: 0;
-  /*background: rgba(200,200,255,0.3);*/
   display: none;
 }
 #archercursor_d_center,
@@ -60,7 +59,7 @@
 }
 #archercursor_d_eligiblelinks {
   opacity: 1;
-  /*background: rgba(255,33,0,0.2);*/
+  background: none;
 }
 #archercursor_d_eligiblelinks .target_box {
   border: 1px solid #999;

@@ -1,4 +1,15 @@
 (function(){
+
+var debug = true;
+// http://paulirish.com/2009/log-a-lightweight-wrapper-for-consolelog/
+window.log = function(){
+  log.history = log.history || [];   // store logs to an array for reference
+  log.history.push(arguments);
+  if(this.console && debug){
+    console.log( Array.prototype.slice.call(arguments) );
+  }
+};
+
 // Stolen from jQuery
 var getElemOffset = function(elem) {
   var box = elem.getBoundingClientRect(), doc = elem.ownerDocument, body = doc.body, docElem = doc.documentElement,
@@ -76,7 +87,7 @@ var getScaledDist = function(dist, scale) {
 
 // returns true if a point is inside a link (box)
 var isInsideLink = function(x,y,link) {
-    //console.log('link check:',x,y,link);
+    //log('link check:',x,y,link);
     return (link.left < x && x < link.right) && (link.top < y && y < link.bottom);
 }
 
@@ -159,11 +170,11 @@ var getLinkPositions = function() {
             bottom: offset.top+a.offsetHeight
         }; pageLinks.push(link);
     }
-    console.log('pageLinks:',pageLinks);
+    //log('pageLinks:',pageLinks);
     return pageLinks
 }
 links = getLinkPositions();
-console.log('links:',links);
+log('links:',links);
 
 var targetLink = null;
 var eligibleLinks = []; // list of links that meet criteria
@@ -370,7 +381,7 @@ var handleMouseMove = function(x, y, e) {
     targetX = targetCoords.x;
     targetY = targetCoords.y;
 
-    console.log('mouse position:',x,y,'target:',targetX, targetY);
+    //log('mouse position:',x,y,'target:',targetX, targetY);
 
     // check for activated links
     eligibleLinks = [];
@@ -382,7 +393,7 @@ var handleMouseMove = function(x, y, e) {
 
             // get ctr to link distance
             var dist = pointBoxDist(ctrX, ctrY, l);
-            console.log('link dist:', dist);
+            //log('link dist:', dist);
             var elink = {
                 distance: dist,
                 link: l
@@ -403,7 +414,7 @@ var handleMouseMove = function(x, y, e) {
         }
     }
     getDistTargetLink();
-    console.log('eligibleLinks:',eligibleLinks);
+    log('eligibleLinks:',eligibleLinks);
 
     redraw();
 }
@@ -411,7 +422,7 @@ var handleMouseMove = function(x, y, e) {
 var handleMouseClick = function(e) {
 
     if (!active) { return; }
-    //console.log('mousedown:', e);
+    log('mousedown:', e);
     if (targetLink) {
         e.preventDefault();
         triggerLink();
