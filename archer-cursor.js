@@ -303,7 +303,7 @@ var handleKey = function(keycode, state, code) {
             if (state == 'down') {
 
                 // Pressing both CMD keys at the same time deactivates
-                if (active) { deactivate(); } 
+                if (active) { deactivate(); }
 
                 active = true;
                 activeDist = false;
@@ -341,6 +341,7 @@ var handleKey = function(keycode, state, code) {
             }
             break;
         case 27: // ESC
+        case 32: // SPACE (most likely mapped to default spotlight shortcut in mac)
             deactivate();
             break;
 
