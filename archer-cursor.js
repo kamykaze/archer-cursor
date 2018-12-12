@@ -149,6 +149,8 @@ var targetY=0;
 var angle=0; // angle between center and cursor
 var distance=0; // distance between center and cursor
 var selectedIndex=0;
+var screenX = window.screenX;
+var screenY = window.screenY;
 
 // [{top:0, left:0, right:0, bottom:0, a:<anchor>}, ...]
 var links = [];
@@ -282,6 +284,8 @@ var deactivate = function() {
     ctrY = cursorY;
     angle = 0;
     distance = 0;
+    screenX = window.screenX;
+    screenY = window.screenY;
     redraw();
 }
 
@@ -354,9 +358,10 @@ var handleMouseMove = function(x, y, e) {
 
     // don't do expensive calculations if not active
     if (!active) { return false; }
-    if (!e.metaKey) { // TODO: make this in sync with handlekey's keycode for CMD key
+
+    // checks if window has moved since starting activation
+    if (window.screenX !== screenX || window.screenY != screenY) {
         deactivate();
-        return false;
     }
 
     var targetCoords = {};
@@ -414,7 +419,7 @@ var handleMouseMove = function(x, y, e) {
         }
     }
     getDistTargetLink();
-    log('eligibleLinks:',eligibleLinks);
+    //log('eligibleLinks:',eligibleLinks);
 
     redraw();
 }
@@ -429,6 +434,16 @@ var handleMouseClick = function(e) {
     }
 }
 
+var handleWindowResize = function(e) {
+    log('window resized', e);
+    deactivate();
+    links=getLinkPositions();
+}
+
+var handleWindowBlur = function(e) {
+    log('window out of focus, deactivating', e);
+    deactivate();
+}
 
 // Event Handlers
 
@@ -451,7 +466,11 @@ document.addEventListener('mousedown', function(e){
 });
 
 window.addEventListener('resize', function(e){
-    links=getLinkPositions();
+    handleWindowResize(e);
+});
+
+window.addEventListener('blur', function(e) {
+    handleWindowBlur(e);
 });
 
 })();
