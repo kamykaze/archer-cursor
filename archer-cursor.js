@@ -151,6 +151,9 @@ var distance=0; // distance between center and cursor
 var selectedIndex=0;
 var screenX = window.screenX;
 var screenY = window.screenY;
+var scroll = false;
+var scrollXPos = 0;
+var scrollYPos = 0;
 
 // [{top:0, left:0, right:0, bottom:0, a:<anchor>}, ...]
 var links = [];
@@ -296,6 +299,16 @@ var triggerLink = function() {
     }
 }
 
+var activateScroll = function() {
+    scroll = true;
+    log('scroll mode activated')
+}
+
+var deactivateScroll = function() {
+    scroll = false;
+    log('scroll mode deactivated')
+}
+
 var handleKey = function(keycode, state, code) {
 
     switch(keycode) {
@@ -323,14 +336,24 @@ var handleKey = function(keycode, state, code) {
 
         case 16: // Shift
             if (state == 'down') {
-                if (code == 'ShiftLeft') {
-                    selectedIndex--;
+                if (active) {
+                    if (code == 'ShiftLeft') {
+                        selectedIndex--;
+                    }
+                    if (code == 'ShiftRight') {
+                        selectedIndex++;
+                    }
+                    getTargetLink();
+                    redraw();
                 }
-                if (code == 'ShiftRight') {
-                    selectedIndex++;
+                else {
+                    activateScroll();
                 }
-                getTargetLink();
-                redraw();
+            }
+            else {
+                if (scroll) {
+                    deactivateScroll();
+                }
             }
             break;
 
@@ -358,7 +381,11 @@ var handleMouseMove = function(x, y, e) {
     cursorY = y;
 
     // don't do expensive calculations if not active
-    if (!active) { return false; }
+    if (!active && !scroll) { 
+        scrollXPos = x;
+        scrollYPos = y;
+        return false; 
+    }
 
     // checks if window has moved since starting activation
     if (window.screenX !== screenX || window.screenY != screenY) {
@@ -387,42 +414,57 @@ var handleMouseMove = function(x, y, e) {
     targetX = targetCoords.x;
     targetY = targetCoords.y;
 
-    //log('mouse position:',x,y,'target:',targetX, targetY);
+    log('mouse position:',x,y,'target:',targetX, targetY);
 
-    // check for activated links
-    eligibleLinks = [];
-    for (var i=0; i < links.length; i++) {
-        var l = links[i];
-        var intersects = lineLinkIntersect(cursorX,cursorY,targetX,targetY,l);
-        var inView = boxInPartialView(l);
-        if (intersects && inView) {
+    // link target (default) mode
+    if (active) {
 
-            // get ctr to link distance
-            var dist = pointBoxDist(ctrX, ctrY, l);
-            //log('link dist:', dist);
-            var elink = {
-                distance: dist,
-                link: l
-            }
-            //  then insert the link in proper sorted order
-            var inserted = false;
-            for (var j = 0, len = eligibleLinks.length; j < len; j++) {
-                if (dist < eligibleLinks[j].distance) {
-                    eligibleLinks.splice(j, 0, elink);
-                    inserted=true;
-                    break;
+        // check for activated links
+        eligibleLinks = [];
+        for (var i=0; i < links.length; i++) {
+            var l = links[i];
+            var intersects = lineLinkIntersect(cursorX,cursorY,targetX,targetY,l);
+            var inView = boxInPartialView(l);
+            if (intersects && inView) {
+
+                // get ctr to link distance
+                var dist = pointBoxDist(ctrX, ctrY, l);
+                //log('link dist:', dist);
+                var elink = {
+                    distance: dist,
+                    link: l
                 }
-            }
-            if (!inserted) {
-                eligibleLinks.push(elink);
-            }
+                //  then insert the link in proper sorted order
+                var inserted = false;
+                for (var j = 0, len = eligibleLinks.length; j < len; j++) {
+                    if (dist < eligibleLinks[j].distance) {
+                        eligibleLinks.splice(j, 0, elink);
+                        inserted=true;
+                        break;
+                    }
+                }
+                if (!inserted) {
+                    eligibleLinks.push(elink);
+                }
 
+            }
         }
-    }
-    getDistTargetLink();
-    //log('eligibleLinks:',eligibleLinks);
+        getDistTargetLink();
+        //log('eligibleLinks:',eligibleLinks);
 
-    redraw();
+        redraw();
+    }
+
+    // Scrolling mode
+    if (scroll) {
+        // original click and scroll code from https://codepen.io/JTParrett/pen/uzGvy
+        var offsetX = scrollXPos - x;
+        var offsetY = scrollYPos - y;
+        log('scrolling:', scrollXPos, scrollYPos, offsetX, offsetY);
+         $(window).scrollTop($(window).scrollTop() + offsetY); 
+         $(window).scrollLeft($(window).scrollLeft() + offsetX);
+        redraw();
+    }
 }
 
 var handleMouseClick = function(e) {

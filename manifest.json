@@ -5,7 +5,7 @@
     "description": "An alternative link targeting navigation system that combines mouse and keyboard use for minimal cursor travel",
     "content_scripts": [{
         "css": ["archer-cursor.css"],
-        "js": ["archer-cursor.js"],
+        "js": ["jquery.min.js","archer-cursor.js"],
         "matches": [
             "*://*/*"
         ]
