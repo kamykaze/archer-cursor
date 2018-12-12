@@ -289,6 +289,7 @@ var deactivate = function() {
     distance = 0;
     screenX = window.screenX;
     screenY = window.screenY;
+    scroll = false;
     redraw();
 }
 
